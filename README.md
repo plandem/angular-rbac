@@ -69,7 +69,7 @@ Btw, how many requests will be sent to server at last example and what permissio
 Why only one checking at last request? That's because that checking was already requested.
 
 **N.B.:** 
-**$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true*/**false**/**undefined**).
+**$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true**, **false**, **undefined**).
 
 
 ### API
