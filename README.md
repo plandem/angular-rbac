@@ -174,12 +174,14 @@ Here we set URL for **http://example.com/api/rbac** and set default name for ser
 
 
 ### Detailed example
-
+index.html
+```
 	<html ng-app="myApp">
 		<head>
 			<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.min.js"></script>
 			<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular-route.min.js"></script>
 			<script src="rbac.js"></script>
+			<script src="app.js"></script>
 		</head>
 		<body ng-controller="AppController">
 			<button allow="Guest">Login</button>
@@ -190,8 +192,9 @@ Here we set URL for **http://example.com/api/rbac** and set default name for ser
 			</ul>
 		</body>
 	</html>
+```
 
-jasvascript
+app.js
 ```javascript
 var app = angular.module('myApp', ['ngRoute', 'rbac']);
 
