@@ -144,7 +144,7 @@ angular.module('rbac', [])
 			/**
 			 * Return current state of permission for AuthItem. Don't use it directly, used at watch function inside of directive
 			 * @param {string} authItem - AuthItem to get
-			 * @returns {*}
+			 * @returns {(boolean|undefined)}
 			 */
 			var allowFn = function(authItem) {
 				return permissions[authItem];
@@ -152,7 +152,7 @@ angular.module('rbac', [])
 
 			/**
 			 * Grant permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
-			 * @param {{string}} authItem - AuhItem to grant permission
+			 * @param {string} authItem - AuhItem to grant permission
 			 */
 			var grantFn = function(authItem) {
 				permissions[authItem] = true;
@@ -160,17 +160,26 @@ angular.module('rbac', [])
 
 			/**
 			 * Revoke permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
-			 * @param {{string}} authItem - AuthItem to revoke permission
+			 * @param {string} authItem - AuthItem to revoke permission
 			 */
 			var revokeFn = function(authItem) {
 				permissions[authItem] = false;
 			};
 
 			/**
-			 * Resets all permissions that were locally stored.
+			 * Resets permissions that were locally stored.
+			 * @param {[string|string[]]} authItems - AuthItems to reset permissions. If omit - reset all permissions
 			 */
-			var resetFn = function() {
-				permissions = {};
+			var resetFn = function(authItems) {
+				if(angular.isArray(authItems)) {
+					angular.forEach(authItems, function(value, key) {
+						permissions[key] = undefined;
+					});
+				} else if(angular.isDefined(authItems)) {
+					permissions[authItems] = undefined;
+				} else {
+					permissions = {};
+				}
 			};
 
 			var $rbac = {
