@@ -61,47 +61,8 @@ Ok, everything is clear with directives, but what about controllers? Can we use 
 
 That's how you can use service at controllers. Btw, how many requests will be send to server at last example and what permissions will be checked?
 
-Ok, ok....only request will be sent to server: ["User", "Admin", "Guest"]. WTF?! Why only one and combined? That's because 
-of scopes/$digest. Service monitor any requests during one scope, combine and send as one request.
-
-So our previous example, is actually like:
-
-	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
-
-		$rbac.checkAccess(['User', 'Admin', 'Guest']).then(function(){
-			//we got 'response' from server for 3 permissions 'User', 'Admin' and 'Guest'
-	    
-			if($rbac.allow('User'))
-				alert('Hello, user!');
-	        
-			if(!($rbac.allow('Admin')))
-				alert('You are not admin!');
-		});
-
-	}]);
-
-WTF?!?! How to make how we wanted it before? Well, checkAcess returns 'promise' object, so you need to do it like:
-
-	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
-
-		$rbac.checkAccess(['User', 'Admin']).then(function(){
-			//we got 'response' from server for 2 permissions 'User' and 'Admin'
-	    
-			if($rbac.allow('User'))
-				alert('Hello, user!');
-	        
-			if(!($rbac.allow('Admin')))
-				alert('You are not admin!');
-	        
-			$rbac.checkAccess(['Guest', 'Admin']).then(function() {
-				//...
-			});   
-		});
-
-	}]);
-
-In that case two requests to server will be send. First will ask for ['User', 'Admin'] and second will ask for ['Guest']
-
+Ok, ok....two request will be sent to server: ["User", "Admin"] and ["Guest"]. WTF?! Why only one checking at last request? That's because 
+that checking was already requested.
 
 N.B.: $rbac.allow() is not requesting permission check, it's only return current state of that permission (true/false/undefined).
 
