@@ -43,13 +43,13 @@ Ok, everything is clear with directives, but what about controllers? Can we use 
 
 	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-		$rbac.checkAccess(['User', 'Admin']).then(function(response){
+		$rbac.checkAccess(['User', 'Admin']).then(function(){
 			//we got 'response' from server for 2 permissions 'User' and 'Admin'
 	    
-			if(response['User'])
+			if($rbac.allow('User'))
 				alert('Hello, user!');
 	        
-			if(!(response['Admin']))
+			if(!($rbac.allow('Admin')))
 				alert('You are not admin!');
 		});
 
@@ -68,13 +68,13 @@ So our previous example, is actually like:
 
 	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-		$rbac.checkAccess(['User', 'Admin', 'Guest']).then(function(response){
+		$rbac.checkAccess(['User', 'Admin', 'Guest']).then(function(){
 			//we got 'response' from server for 3 permissions 'User', 'Admin' and 'Guest'
 	    
-			if(response['User'])
+			if($rbac.allow('User'))
 				alert('Hello, user!');
 	        
-			if(!(response['Admin']))
+			if(!($rbac.allow('Admin')))
 				alert('You are not admin!');
 		});
 
@@ -84,16 +84,16 @@ WTF?!?! How to make how we wanted it before? Well, checkAcess returns 'promise' 
 
 	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-		$rbac.checkAccess(['User', 'Admin']).then(function(response){
+		$rbac.checkAccess(['User', 'Admin']).then(function(){
 			//we got 'response' from server for 2 permissions 'User' and 'Admin'
 	    
-			if(response['User'])
+			if($rbac.allow('User'))
 				alert('Hello, user!');
 	        
-			if(!(response['Admin']))
+			if(!($rbac.allow('Admin')))
 				alert('You are not admin!');
 	        
-			$rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
+			$rbac.checkAccess(['Guest', 'Admin']).then(function() {
 				//...
 			});   
 		});
@@ -101,6 +101,10 @@ WTF?!?! How to make how we wanted it before? Well, checkAcess returns 'promise' 
 	}]);
 
 In that case two requests to server will be send. First will ask for ['User', 'Admin'] and second will ask for ['Guest']
+
+
+N.B.: $rbac.allow() is not requesting permission check, it's only return current state of that permission (true/false/undefined).
+
 
 API
 ===
