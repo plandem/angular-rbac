@@ -29,7 +29,7 @@ So let's rock-n-roll.
 <button allow="User">Update Profile</button>
 ...
 <ul ng-repeat="user in users">
-    <li>{{user.name}} <button allow="Admin">Update</button></li>
+	<li>{{user.name}} <button allow="Admin">Update</button></li>
 </ul>
 
 All our 'allow' directives enqueue service to check for permissions. At this example, only one request for checking will be send: ["Guest", "User", "Admin"]
@@ -43,19 +43,19 @@ Ok, everything is clear with directives, but what about controllers? Can we use 
 
 app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-  $rbac.checkAccess(['User', 'Admin']).then(function(response){
-	    //we got 'response' from server for 2 permissions 'User' and 'Admin'
+	$rbac.checkAccess(['User', 'Admin']).then(function(response){
+		//we got 'response' from server for 2 permissions 'User' and 'Admin'
 	    
-	    if(response['User'])
-	        alert('Hello, user!');
+		if(response['User'])
+			alert('Hello, user!');
 	        
-	    if(!(response['Admin']))
-	        alert('You are not admin!');
+		if(!(response['Admin']))
+			alert('You are not admin!');
 	});
 
- $rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
-    //...
- });
+	$rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
+		//...
+	});
  
 }]);
 
@@ -68,14 +68,14 @@ So our previous example, is actually like:
 
 app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-  $rbac.checkAccess(['User', 'Admin', 'Guest']).then(function(response){
-	    //we got 'response' from server for 3 permissions 'User', 'Admin' and 'Guest'
+	$rbac.checkAccess(['User', 'Admin', 'Guest']).then(function(response){
+		//we got 'response' from server for 3 permissions 'User', 'Admin' and 'Guest'
 	    
-	    if(response['User'])
-	        alert('Hello, user!');
+		if(response['User'])
+			alert('Hello, user!');
 	        
-	    if(!(response['Admin']))
-	        alert('You are not admin!');
+		if(!(response['Admin']))
+			alert('You are not admin!');
 	});
 
 }]);
@@ -84,18 +84,18 @@ WTF?!?! How to make how we wanted it before? Well, checkAcess returns 'promise' 
 
 app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
-  $rbac.checkAccess(['User', 'Admin']).then(function(response){
-	    //we got 'response' from server for 2 permissions 'User' and 'Admin'
+	$rbac.checkAccess(['User', 'Admin']).then(function(response){
+		//we got 'response' from server for 2 permissions 'User' and 'Admin'
 	    
-	    if(response['User'])
-	        alert('Hello, user!');
+		if(response['User'])
+			alert('Hello, user!');
 	        
-	    if(!(response['Admin']))
-	        alert('You are not admin!');
+		if(!(response['Admin']))
+			alert('You are not admin!');
 	        
-	    $rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
-          //...
-      });   
+		$rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
+			//...
+		});   
 	});
 
 }]);
