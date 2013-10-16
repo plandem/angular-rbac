@@ -148,7 +148,7 @@ app.controller('pageController', ['$scope', '$rbac', function($scope, $rbac) {
 And you will have to do it at each controller where do you want to use **$rbac** service. Sometimes, it's so annoying, that's why you can configure service for auto-injection via **setScopeName()** during config phase.
 
 ```javascript
-app.config(['$rbacProvider', function($rbacProvider, $provide) {
+app.config(['$rbacProvider', function($rbacProvider) {
 	$rbacProvider.setScopeName('rbac');
 }]);
 ```
