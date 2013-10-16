@@ -132,7 +132,7 @@ app.config(['$rbacProvider', function($rbacProvider, $provide) {
 
 As you see, here we set backend's URL as **http://example.com/api/rbac**
 
-##### Auto-inject server at controller's scope
+##### Auto-inject service at controller's scope
 To use **$rbac** service at controllers, you must manually inject it as any other AngularJS services.
 
 E.g.:
@@ -153,7 +153,7 @@ app.config(['$rbacProvider', function($rbacProvider, $provide) {
 }]);
 ```
 Here we set default name of service as **rbac** at $rootScope (so this service will be available at any other controller)
-Now you can use **$rbac** service at any controller without injection. E.g.:
+Now you can use **$rbac** service at any controller without manual injection. E.g.:
 
 ```javascript
 app.controller('pageController', ['$scope', function($scope){
@@ -165,7 +165,6 @@ app.controller('pageController', ['$scope', function($scope){
 
 **N.B.:** 
 You can use combined configuration if you want to use both settings. E.g.:
-
 ```javascript
 app.config(['$rbacProvider', function($rbacProvider, $provide) {
 	$rbacProvider.setUrl('http://example.com/api/rbac').setScopeName('rbac');
