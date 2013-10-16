@@ -113,7 +113,7 @@ function revoke(authItem)
 
 /**
 * Resets permissions that were locally stored.
-* @param {[string|string[]]} authItems - AuthItems to reset permissions. If omit - reset all permissions
+* @param {[string|string[]]} authItems - AuthItems to reset. If omit - reset all permissions
 */
 function reset(authItems)
 ```
