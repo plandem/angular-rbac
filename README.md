@@ -84,26 +84,29 @@ Service $rbac has some useful methods, let's look more closely
 function checkAccess(authItems)
 
 /**
-* Put AuthItem in queue for checking of permission. Can be used from directives. Checking will be delayed till next $digest.
+* Put AuthItem in queue for checking of permission. Can be used from directives. 
+* Checking will be delayed till next $digest.
 * @param {string} authItem - AuthItem to check for permission
 */
 function enqueueChecking(authItem)
 
 /**
-* Return current state of permission for AuthItem. Don't use it directly, used at watch function inside of directive
+* Return current state of permission for AuthItem.
 * @param {string} authItem - AuthItem to get
 * @returns {(boolean|undefined)}
 */
 function allow(authItem)
 
 /**
-* Grant permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
+* Grant permission for AuthItem. That's only local operation, that can be used after 
+* some special tasks at client-side. No any server processing.
 * @param {string} authItem - AuhItem to grant permission
 */
 function grant(authItem)
 
 /**
-* Revoke permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
+* Revoke permission for AuthItem. That's only local operation, that can be used after 
+* some special tasks at client-side. No any server processing.
 * @param {string} authItem - AuthItem to revoke permission
 */
 function revoke(authItem)
