@@ -14,8 +14,7 @@ P.S.: Task of this module - easily to add posibilities to check permission witho
 backend do all dirty work. Moving/duplicating any real RBAC/ACL at client side is very bad idea, so in real world, we need only
 some optimizations in our api-centric/ria/web-application. 
 
-Usage
------
+### Usage
 
 As already was mentioned, there are 2 parts: *directive* **allow** and *service* **$rbac**. You can't use directive without service, but of course you can use service without directive.
 
@@ -43,7 +42,7 @@ Of course, there is no any syncronization with server, so in case if state was c
 You will need re-request server for state. To implement logic based on this module - is your task and in your hands.
 
 Ok, everything is clear with directives, but what about controllers? Can we use it here? Sure, let's see:
-
+```javascript
 	app.controller('pageController', ['$scope', '$rbac' , function($scope, $rbac) {
 
 		$rbac.checkAccess(['User', 'Admin']).then(function(){
@@ -56,12 +55,12 @@ Ok, everything is clear with directives, but what about controllers? Can we use 
 				alert('You are not admin!');
 		});
 
-		$rbac.checkAccess(['Guest', 'Admin']).then(function(response) {
+		$rbac.checkAccess(['Guest', 'Admin']).then(function() {
 			//...
 		});
  
 	}]);
-
+```
 That's how you can use service **$rbac** at controllers. 
 
 Btw, how many requests will be sent to server at last example and what permissions will be checked? Ok, ok....two request will be sent to server: 
@@ -72,6 +71,48 @@ Why only one checking at last request? That's because that checking was already 
 N.B.: **$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true*/**false**/**undefined**).
 
 
-API
----
-To be continue...
+
+### API
+Service $rbac has some useful methods, let's look more closely
+
+```javascript 
+/**
+* Direct checking for permissions. Can be executed from controllers.
+* @param {(string|string[])} authItems - AuthItem or array of AuthItems to check for permissions
+* @returns {promise}
+*/
+function checkAccess(authItems)
+
+/**
+* Put AuthItem in queue for checking of permission. Can be used from directives. Checking will be delayed till next $digest.
+* @param {string} authItem - AuthItem to check for permission
+*/
+function enqueueChecking(authItem)
+
+/**
+* Return current state of permission for AuthItem. Don't use it directly, used at watch function inside of directive
+* @param {string} authItem - AuthItem to get
+* @returns {(boolean|undefined)}
+*/
+function allow(authItem)
+
+/**
+* Grant permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
+* @param {string} authItem - AuhItem to grant permission
+*/
+function grant(authItem)
+
+/**
+* Revoke permission for AuthItem. That's only local operation, that can be used after some special tasks at client-side. No any server processing.
+* @param {string} authItem - AuthItem to revoke permission
+*/
+function revoke(authItem)
+
+/**
+* Resets permissions that were locally stored.
+* @param {[string|string[]]} authItems - AuthItems to reset permissions. If omit - reset all permissions
+*/
+function reset(authItems)
+```
+
+### Configuration
