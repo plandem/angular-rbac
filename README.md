@@ -68,12 +68,12 @@ Btw, how many requests will be sent to server at last example and what permissio
 
 Why only one checking at last request? That's because that checking was already requested.
 
-N.B.: **$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true*/**false**/**undefined**).
-
+**N.B.:** 
+**$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true*/**false**/**undefined**).
 
 
 ### API
-Service $rbac has some useful methods, let's look more closely
+Service **$rbac** has some useful methods, let's look more closely
 
 ```javascript 
 /**
@@ -119,3 +119,56 @@ function reset(authItems)
 ```
 
 ### Configuration
+
+##### Setting-up URL for backend
+You can't use **$rbac** service without any configuration. You must set an URL for your backend, at least. You can do it as any AngularJS service via **setURL()** during config phase.
+
+E.g., let's setup URL for our backend:
+```javascript
+app.config(['$rbacProvider', function($rbacProvider, $provide) {
+	$rbacProvider.setUrl('http://example.com/api/rbac');
+}]);
+```
+
+As you see, here we set backend's URL as **http://example.com/api/rbac**
+
+##### Auto-inject server at controller's scope
+To use **$rbac** service at controllers, you must manually inject it as any other AngularJS services.
+
+E.g.:
+```javascript
+app.controller('pageController', ['$scope', '$rbac', function($scope, $rbac) {
+	//now, we can use service at controller
+	$rbac.checkAccess(['User']).then(function(){
+		console.log('User permission: ' + $rbac.allow('User'));
+	});
+}])
+```
+
+And you will have to do it at each controller where do you want to use **$rbac** service. Sometimes, it's so annoying, that's why you can configure service for auto-injection via **setScopeName()** during config phase.
+
+```javascript
+app.config(['$rbacProvider', function($rbacProvider, $provide) {
+	$rbacProvider.setScopeName('rbac');
+}]);
+```
+Here we set default name of service as **rbac** at $rootScope (so this service will be available at any other controller)
+Now you can use **$rbac** service at any controller without injection. E.g.:
+
+```javascript
+app.controller('pageController', ['$scope', function($scope){
+	$scope.rbac.checkAccess(['User']).then(function(){
+		console.log('User permission: ' + $scope.rbac.allow('User'));
+	});
+}]);
+```
+
+**N.B.:** 
+You can use combined configuration if you want to use both settings. E.g.:
+
+```javascript
+app.config(['$rbacProvider', function($rbacProvider, $provide) {
+	$rbacProvider.setUrl('http://example.com/api/rbac').setScopeName('rbac');
+}]);
+```
+Here we set URL for **http://example.com/api/rbac** and set default name for service at $rootScope as **rbac**
