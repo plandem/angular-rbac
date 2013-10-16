@@ -219,4 +219,12 @@ app.config(['$rbacProvider', function($rbacProvider) {
 }]);
 ```
 
-
+```PHP
+echo json_encode(array(
+		"Guest" => false,
+		"Admin" => true,
+		"User" => false,
+		"User.Update" => true,
+	)
+);
+```
