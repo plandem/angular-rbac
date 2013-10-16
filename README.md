@@ -133,7 +133,7 @@ app.config(['$rbacProvider', function($rbacProvider, $provide) {
 As you see, here we set backend's URL as **http://example.com/api/rbac**
 
 ##### Auto-inject service at controller's scope
-To use **$rbac** service at controllers, you must manually inject it as any other AngularJS services.
+To use **$rbac** service at controllers, you must manually inject it as any other AngularJS service.
 
 E.g.:
 ```javascript
@@ -171,3 +171,53 @@ app.config(['$rbacProvider', function($rbacProvider, $provide) {
 }]);
 ```
 Here we set URL for **http://example.com/api/rbac** and set default name for service at $rootScope as **rbac**
+
+
+### Detailed example
+
+index.html
+	<html ng-app="myApp">
+		<head>
+			<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.min.js"></script>
+			<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular-route.min.js"></script>
+			<script src="rbac.js"></script>
+		</head>
+		<body ng-controller="AppController">
+			<button allow="Guest">Login</button>
+			<p allow="User">Hello, user!</p>
+			<button allow="User.UpdateOwnProfile">Update Profile</button>
+			<ul ng-repeat="user in users" allow="Admin">
+				<li>{{user.name}} <button allow="User.Update">Update</button></li>
+			</ul>
+		</body>
+	</html>
+	
+app.js
+
+<script>
+
+var app = angular.module('myApp', ['ngRoute', 'rbac']);
+
+app.config(['$rbacProvider', function($rbacProvider) {
+	$rbacProvider.setUrl('/rbac').setScopeName('rbac');
+}]).run(['$rootScope', '$rbac', function($rootScope, $rbac) {
+	//Let's do some-optimization - prefetch commonly used permissions for users. 
+	// That's only example - all we want - request check for permissions that most used when user just came to site.
+	var mostUsedPermissions = ['Guest', 'User', 'User.UpdateOwnProfile', 'User.Update', 'Admin'];
+	
+	//We don't wanna process result, we only want to prefetch most used permissions. 
+	$rbac.checkAccess(mostUsedPermissions);
+}]).controller('pageController', ['$scope', function($scope){
+	$scope.users = [];
+	
+	$scope.rbac.checkAccess('Admin').then(function(){
+		if($scope.rbac.allow('Admin')) {
+			$scope.users = [
+				{ name: 'Vasiliy Pupkin' },
+				{ name: 'Ivan Ivanov' },
+				{ name: 'Barak Obama' }
+			];
+		}
+	});
+}]);
+</script>
