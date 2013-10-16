@@ -1,0 +1,43 @@
+<html ng-app="myApp">
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular-route.min.js"></script>
+	<script src="../rbac.js"></script>
+</head>
+<body ng-controller="AppController">
+<button allow="Guest">Login</button>
+<p allow="User">Hello, user!</p>
+<button allow="User.UpdateOwnProfile">Update Profile</button>
+<ul ng-repeat="user in users" allow="Admin">
+	<li>{{user.name}} <button allow="User.Update">Update</button></li>
+</ul>
+
+<script>
+	var app = angular.module('myApp', ['ngRoute', 'rbac']);
+
+	app.config(['$rbacProvider', function($rbacProvider) {
+				$rbacProvider.setUrl('rbac.php').setScopeName('rbac');
+			}]).run(['$rootScope', '$rbac', function($rootScope, $rbac) {
+				//Let's do some-optimization - prefetch commonly used permissions for users.
+				//That's only example. All we want  request check for permissions that most
+				//used when user just came to site.
+				var mostUsedPermissions = ['Guest', 'User', 'User.UpdateOwnProfile', 'User.Update', 'Admin'];
+
+				//We don't wanna process result, we only want to prefetch most used permissions.
+				$rbac.checkAccess(mostUsedPermissions);
+			}]).controller('AppController', ['$scope', function($scope){
+				$scope.users = [];
+
+				$scope.rbac.checkAccess('Admin').then(function(){
+					if($scope.rbac.allow('Admin')) {
+						$scope.users = [
+							{ name: 'Vasiliy Pupkin' },
+							{ name: 'Ivan Ivanov' },
+							{ name: 'Barak Obama' }
+						];
+					}
+				});
+			}]);
+</script>
+</body>
+</html>
