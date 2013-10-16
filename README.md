@@ -204,7 +204,7 @@ app.config(['$rbacProvider', function($rbacProvider) {
 	
 	//We don't wanna process result, we only want to prefetch most used permissions. 
 	$rbac.checkAccess(mostUsedPermissions);
-}]).controller('pageController', ['$scope', function($scope){
+}]).controller('AppController', ['$scope', function($scope){
 	$scope.users = [];
 	
 	$scope.rbac.checkAccess('Admin').then(function(){
