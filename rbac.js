@@ -83,6 +83,7 @@ angular.module('rbac', [])
 			 */
 			var serverRequestFn = function(authItems) {
 				var request = [];
+				var deferred = $q.defer();
 
 				/**
 				 * We don't wanna spam the server, so let's check only permissions that were not requested before
@@ -92,31 +93,48 @@ angular.module('rbac', [])
 						if(angular.isDefined(allowFn(value)) || angular.isDefined(processing[value]))
 							return;
 
-						processing[value] = true;
+						processing[value] = deferred.promise;
 						request.push(value);
 					});
 				} else if(!(angular.isDefined(allowFn(authItems)))) {
 					request.push(authItems);
-					processing[authItems] = true;
+					processing[authItems] = deferred.promise;
 				}
 
 				/**
 				 * New permissions to check?
 				 */
 				if(request.length) {
-					return $http.post(url, request).then(function(response) {
+					$http.post(url, request).then(function(response) {
 						angular.forEach(response.data, function(value, key) {
 							permissions[key] = value;
-							processing[key] = undefined;
 						});
 
 						return response.data;
+					}).finally(function() {
+						deferred.resolve();
 					});
 				} else {
-					var defer = $q.defer();
-					defer.resolve([]);
-					return defer.promise;
+					/**
+					 * So, looks like no new unique checking and requested checking are already in processing.
+					 */
+					var pending = {};
+
+					if(angular.isArray(authItems)) {
+						angular.forEach(authItems, function(value) {
+							pending[value] = processing[value];
+						});
+					} else {
+						pending[authItems] = processing[authItems];
+					}
+
+					/**
+					 * return new 'promise' that will wait till all previously requested items will be resolved.
+					 */
+					return $q.all(pending);
 				}
+
+				return deferred.promise;
 			};
 
 			/**
@@ -174,11 +192,14 @@ angular.module('rbac', [])
 				if(angular.isArray(authItems)) {
 					angular.forEach(authItems, function(value, key) {
 						permissions[key] = undefined;
+						processing[key] = undefined;
 					});
 				} else if(angular.isDefined(authItems)) {
 					permissions[authItems] = undefined;
+					processing[authItems] = undefined;
 				} else {
 					permissions = {};
+					processing = {};
 				}
 			};
 
