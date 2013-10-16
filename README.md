@@ -191,6 +191,7 @@ Here we set URL for **http://example.com/api/rbac** and set default name for ser
 		</body>
 	</html>
 
+jasvascript
 ```javascript
 var app = angular.module('myApp', ['ngRoute', 'rbac']);
 
@@ -219,6 +220,7 @@ app.config(['$rbacProvider', function($rbacProvider) {
 }]);
 ```
 
+rbac.php
 ```PHP
 echo json_encode(array(
 		"Guest" => false,
