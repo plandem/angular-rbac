@@ -89,7 +89,7 @@ angular.module('rbac', [])
 				 */
 				if(angular.isArray(authItems)) {
 					angular.forEach(authItems, function(value) {
-						if(getPermissionFn(value) || angular.isDefined(processing[value]))
+						if(angular.isDefined(getPermissionFn(value)) || angular.isDefined(processing[value]))
 							return;
 
 						processing[value] = true;
