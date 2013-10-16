@@ -89,13 +89,13 @@ angular.module('rbac', [])
 				 */
 				if(angular.isArray(authItems)) {
 					angular.forEach(authItems, function(value) {
-						if(angular.isDefined(getPermissionFn(value)) || angular.isDefined(processing[value]))
+						if(angular.isDefined(allowFn(value)) || angular.isDefined(processing[value]))
 							return;
 
 						processing[value] = true;
 						request.push(value);
 					});
-				} else if(!(angular.isDefined(getPermissionFn(authItems)))) {
+				} else if(!(angular.isDefined(allowFn(authItems)))) {
 					request.push(authItems);
 					processing[authItems] = true;
 				}
@@ -129,7 +129,7 @@ angular.module('rbac', [])
 					if(angular.isArray(authItems))
 						return resolved;
 
-					return getPermissionFn(authItems);
+					return allowFn(authItems);
 				});
 			};
 
@@ -146,7 +146,7 @@ angular.module('rbac', [])
 			 * @param {string} authItem - AuthItem to get
 			 * @returns {*}
 			 */
-			var getPermissionFn = function(authItem) {
+			var allowFn = function(authItem) {
 				return permissions[authItem];
 			};
 
@@ -176,7 +176,7 @@ angular.module('rbac', [])
 			var $rbac = {
 				checkAccess: checkAccessFn,
 				enqueueChecking: enqueueCheckingFn,
-				getPermission: getPermissionFn,
+				allow: allowFn,
 				grant: grantFn,
 				revoke: revokeFn,
 				reset: resetFn
@@ -200,7 +200,7 @@ angular.module('rbac', [])
 			return function ($scope, $element, $attr) {
 				var childElement, childScope;
 
-				$scope.$watch(function() { return $rbac.getPermission($attr.allow); }, function (newVal, oldVal) {
+				$scope.$watch(function() { return $rbac.allow($attr.allow); }, function (newVal, oldVal) {
 					if (newVal === oldVal)
 						return;
 
