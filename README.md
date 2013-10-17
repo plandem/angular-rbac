@@ -142,8 +142,6 @@ And you will have to do it at each controller where do you want to use **$rbac**
 **serverRequest** - Function that will be executed to request authItems for checking. This function must return 'promise' object.
 By default, service is using **$http.post()**. 
 
-You can't use **$rbac** service without any configuration. You must set an URL for your backend, at least.
-
 ```javascript
 app.config(['$rbacProvider', function($rbacProvider) {
 	$rbacProvider.setup({
