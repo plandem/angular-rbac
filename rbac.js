@@ -41,6 +41,24 @@ angular.module('rbac', [])
 		var scopeName;
 
 		/**
+		 * Function that will be executed to request authItems for checking. Must return 'promise' object.
+		 * @param {string[]} authItems - array of authItems to check permissions
+		 * @returns {promise}
+		 */
+		var serverRequestFn = function(authItems) {
+			return $http.post(url, authItems);
+		};
+
+		/**
+		 * Set callback that will be executed to request permissions for authItems.
+		 * @param {function} callback - Callback that returns promise object
+		 */
+		var setServerRequest = function(callback) {
+			serverRequestFn = callback;
+			return this;
+		};
+
+		/**
 	 	 * Set URL for backend server that supports RBAC
 	 	 * @param {string} serverUrl - Url of server
 	 	 */
@@ -71,7 +89,7 @@ angular.module('rbac', [])
 			 */
 			$rootScope.$watch(function() { return queue.length; }, function(length) {
 				if (length) {
-					serverRequestFn(queue);
+					requestFn(queue);
 					queue.length = 0;
 				}
 			});
@@ -81,7 +99,7 @@ angular.module('rbac', [])
 			 * @param {(string|string[])} authItems - AuthItem or array of AuthItems to check for permissions
 			 * @returns {promise}
 			 */
-			var serverRequestFn = function(authItems) {
+			var requestFn = function(authItems) {
 				var request = [];
 				var deferred = $q.defer();
 
@@ -105,7 +123,7 @@ angular.module('rbac', [])
 				 * New permissions to check?
 				 */
 				if(request.length) {
-					$http.post(url, request).then(function(response) {
+					serverRequestFn(request).then(function(response) {
 						angular.forEach(response.data, function(value, key) {
 							permissions[key] = value;
 						});
@@ -143,7 +161,7 @@ angular.module('rbac', [])
 			 * @returns {promise}
 			 */
 			var checkAccessFn = function(authItems) {
-				return serverRequestFn(authItems).then(function(resolved) {
+				return requestFn(authItems).then(function(resolved) {
 					if(angular.isArray(authItems))
 						return resolved;
 
@@ -209,7 +227,8 @@ angular.module('rbac', [])
 				allow: allowFn,
 				grant: grantFn,
 				revoke: revokeFn,
-				reset: resetFn
+				reset: resetFn,
+				serverRequest: serverRequestFn
 			};
 
 			/**
