@@ -66,7 +66,7 @@ That's how you can use service **$rbac** at controllers.
 Btw, how many requests will be sent to server at last example and what permissions will be checked? Ok, ok....two request will be sent to server: 
 > ["User", "Admin"] and ["Guest"]. 
 
-Why only one checking at last request? That's because that checking was already requested.
+Why only one checking at last request? That's because that checking was already requested. Why two request to server? Because, we checked at controller. Only directives optimized for number of request, not controllers.
 
 **N.B.:** 
 **$rbac.allow()** is not requesting permission check, it only returns current state of that permission (**true**, **false**, **undefined**).
@@ -125,7 +125,7 @@ You can configure service during config phase via **setup()** function. You can'
 **url** - URL that will be used to request permissions for AuthItems
 
 **scopeName** - Name of RBAC service at scope. Used for auto-injection to controller's scope. 
-If omit, then no auto-injection. You need to inject at least one to use this feature (E.g.: at run() of application)
+If omit, then no auto-injection. You need to inject at least once to use this feature (E.g.: at run() of application)
 
 To use **$rbac** service at controllers, you must manually inject it as any other AngularJS service.
 E.g.:
