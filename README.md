@@ -120,21 +120,14 @@ function reset(authItems)
 
 ### Configuration
 
-##### Setting-up URL for backend
-You can't use **$rbac** service without any configuration. You must set an URL for your backend, at least. You can do it as any AngularJS service via **setURL()** during config phase.
+You can configure service during config phase via **setup()** function. You can't use **$rbac** service without any configuration. You must set an URL for your backend, at least.
 
-E.g., let's setup URL for our backend:
-```javascript
-app.config(['$rbacProvider', function($rbacProvider, $provide) {
-	$rbacProvider.setUrl('http://example.com/api/rbac');
-}]);
-```
+**url** - URL that will be used to request permissions for AuthItems
 
-As you see, here we set backend's URL as **http://example.com/api/rbac**
+**scopeName** - Name of RBAC service at scope. Used for auto-injection to controller's scope. 
+If omit, then no auto-injection. You need to inject at least one to use this feature (E.g.: at run() of application)
 
-##### Auto-inject service at controller's scope
 To use **$rbac** service at controllers, you must manually inject it as any other AngularJS service.
-
 E.g.:
 ```javascript
 app.controller('pageController', ['$scope', '$rbac', function($scope, $rbac) {
@@ -144,15 +137,22 @@ app.controller('pageController', ['$scope', '$rbac', function($scope, $rbac) {
 	});
 }])
 ```
+And you will have to do it at each controller where do you want to use **$rbac** service. Sometimes, it's so annoying, that's why you can configure service for auto-injection via **scopeName** setting during config phase.
 
-And you will have to do it at each controller where do you want to use **$rbac** service. Sometimes, it's so annoying, that's why you can configure service for auto-injection via **setScopeName()** during config phase.
+**serverRequest** - Function that will be executed to request authItems for checking. This function must return 'promise' object.
+By default, service is using **$http.post()**. 
+
+You can't use **$rbac** service without any configuration. You must set an URL for your backend, at least.
 
 ```javascript
 app.config(['$rbacProvider', function($rbacProvider) {
-	$rbacProvider.setScopeName('rbac');
+	$rbacProvider.setup({
+		url: 'http://example.com/api/rbac',
+		scopeName: 'rbac'
+	});
 }]);
 ```
-Here we set default name of service as **rbac** at $rootScope (so this service will be available at any other controller)
+Here we set URL for **http://example.com/api/rbac** and default name of service as **rbac** at $rootScope (so this service will be available at any other controller)
 Now you can use **$rbac** service at any controller without manual injection. E.g.:
 
 ```javascript
@@ -163,15 +163,15 @@ app.controller('pageController', ['$scope', function($scope){
 }]);
 ```
 
-**N.B.:** 
-You can use combined configuration if you want to use both settings. E.g.:
+Let's configure own serverRequest:
 ```javascript
-app.config(['$rbacProvider', function($rbacProvider, $provide) {
-	$rbacProvider.setUrl('http://example.com/api/rbac').setScopeName('rbac');
+app.config(['$rbacProvider', function($rbacProvider) {
+	$rbacProvider.setup({
+		serverRequest: function(data) { return $http.put('http://example.com/api/rbac', data); }
+	});
 }]);
 ```
-Here we set URL for **http://example.com/api/rbac** and set default name for service at $rootScope as **rbac**
-
+Here we replaced default serverRequest with own version. 
 
 ### Detailed example
 index.html
