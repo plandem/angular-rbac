@@ -30,55 +30,33 @@ angular.module('rbac', [])
 		var processing = {};
 
 		/**
-		 * URL that will be used to request permissions for AuthItems
+		 * Settings for service, you can overwrite it during 'config' phase.
+		 * @type {object}
 		 */
-		var url;
-
-		/**
-		 * Name of RBAC service at scope. Used for auto-injection to controller's scope. If omit, then no auto-injection.
-		 * You need to inject at least one to use this feature (E.g.: at run() of application)
-		 */
-		var scopeName;
-
-		/**
-		 * Holds current $http service. We can't manually inject it, because it can be decorated, i.e. replaced with non-default implementation.
-		 */
-		var $httpService;
-
-		/**
-		 * Function that will be executed to request authItems for checking. Must return 'promise' object.
-		 * @param {string[]} authItems - array of authItems to check permissions
-		 * @returns {promise}
-		 */
-		var serverRequestFn = function(authItems) {
-			return $httpService.post(url, authItems);
+		var settings = {
+			/**
+			 * URL that will be used to request permissions for AuthItems
+			 */
+			url: undefined,
+			/**
+			 * Name of RBAC service at scope. Used for auto-injection to controller's scope. If omit, then no auto-injection.
+			 * You need to inject at least one to use this feature (E.g.: at run() of application)
+			 */
+			scopeName: undefined,
+			/**
+			 * Function that will be executed to request authItems for checking. Must return 'promise' object.
+			 * @param {string[]} authItems - array of authItems to check permissions
+			 * @returns {promise}
+			 */
+			serverRequest: undefined
 		};
 
 		/**
-		 * Set callback that will be executed to request permissions for authItems.
-		 * @param {function} callback - Callback that returns promise object
+		 * Setup service during config phase
+		 * @param {object} config - settings for service
 		 */
-		var setServerRequest = function(callback) {
-			serverRequestFn = callback;
-			return this;
-		};
-
-		/**
-	 	 * Set URL for backend server that supports RBAC
-	 	 * @param {string} serverUrl - Url of server
-	 	 */
-		this.setUrl = function(serverUrl) {
-			url = serverUrl;
-			return this;
-		};
-
-		/**
-		 * Set name for RBAC service at $rootScope to gain access to RBAC without any injection to each controller. Consider it like auto-injection for controllers.
-		 * @param {string} name - name at scope for RBAC
-		 */
-		this.setScopeName = function(name) {
-			scopeName = name;
-			return this;
+		this.setup = function(config) {
+			settings = angular.extend(settings, config);
 		};
 
 		/**
@@ -86,10 +64,14 @@ angular.module('rbac', [])
 		 * @type {Array}
 		 */
 		this.$get = ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
-			if(!(angular.isDefined(url)))
-				throw 'RBAC is not configured properly. Configure URL via setUrl().';
+			if(!(angular.isDefined(settings.serverRequest))) {
+				if(!(angular.isDefined(settings.url)))
+					throw 'RBAC is not configured properly. Configure URL via setup().';
 
-			$httpService = $http;
+				settings.serverRequest = function(authItems) {
+					return $http.post(settings.url, authItems);
+				};
+			}
 
 			/**
 			 * Watch for changes of queue each $digest
@@ -130,7 +112,7 @@ angular.module('rbac', [])
 				 * New permissions to check?
 				 */
 				if(request.length) {
-					serverRequestFn(request).then(function(response) {
+					settings.serverRequest(request).then(function(response) {
 						angular.forEach(response.data, function(value, key) {
 							permissions[key] = value;
 						});
@@ -234,15 +216,14 @@ angular.module('rbac', [])
 				allow: allowFn,
 				grant: grantFn,
 				revoke: revokeFn,
-				reset: resetFn,
-				serverRequest: serverRequestFn
+				reset: resetFn
 			};
 
 			/**
 			 * Do we want to use auto-injection for controller's scope? We will not need inject RBAC service manually in that case
 			 */
-			if(angular.isDefined(scopeName))
-				$rootScope[scopeName] = $rbac;
+			if(angular.isDefined(settings.scopeName))
+				$rootScope[settings.scopeName] = $rbac;
 
 			return $rbac;
 	}];
