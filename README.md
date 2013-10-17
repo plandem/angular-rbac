@@ -197,7 +197,7 @@ app.js
 var app = angular.module('myApp', ['ngRoute', 'rbac']);
 
 app.config(['$rbacProvider', function($rbacProvider) {
-	$rbacProvider.setUrl('/rbac').setScopeName('rbac');
+	$rbacProvider.setup( { url: '/rbac', scopeName: 'rbac'} );
 }]).run(['$rootScope', '$rbac', function($rootScope, $rbac) {
 	//Let's do some-optimization - prefetch commonly used permissions for users. 
 	//That's only example. All we want  request check for permissions that most 
