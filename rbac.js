@@ -41,12 +41,17 @@ angular.module('rbac', [])
 		var scopeName;
 
 		/**
+		 * Holds current $http service. We can't manually inject it, because it can be decorated, i.e. replaced with non-default implementation.
+		 */
+		var $httpService;
+
+		/**
 		 * Function that will be executed to request authItems for checking. Must return 'promise' object.
 		 * @param {string[]} authItems - array of authItems to check permissions
 		 * @returns {promise}
 		 */
 		var serverRequestFn = function(authItems) {
-			return $http.post(url, authItems);
+			return $httpService.post(url, authItems);
 		};
 
 		/**
@@ -83,6 +88,8 @@ angular.module('rbac', [])
 		this.$get = ['$rootScope', '$http', '$q', function($rootScope, $http, $q) {
 			if(!(angular.isDefined(url)))
 				throw 'RBAC is not configured properly. Configure URL via setUrl().';
+
+			$httpService = $http;
 
 			/**
 			 * Watch for changes of queue each $digest
