@@ -118,7 +118,7 @@ angular.module('rbac', [])
 						});
 
 						return response.data;
-					}).finally(function() {
+					})['finally'](function() {
 						deferred.resolve();
 					});
 				} else {
