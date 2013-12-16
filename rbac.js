@@ -69,7 +69,7 @@ angular.module('rbac', [])
 					throw 'RBAC is not configured properly. Configure URL via setup().';
 
 				settings.serverRequest = function(authItems) {
-					return $http.post(settings.url, authItems);
+					return $http.post(settings.url, { items: authItems });
 				};
 			}
 
@@ -117,9 +117,11 @@ angular.module('rbac', [])
 							permissions[key] = value;
 						});
 
+						deferred.resolve(response.data);
 						return response.data;
-					})['finally'](function() {
-						deferred.resolve();
+					}, function(response) {
+						deferred.reject(response);
+						return false;
 					});
 				} else {
 					/**
@@ -233,12 +235,13 @@ angular.module('rbac', [])
 		priority: 1000,
 		terminal: true,
 		restrict: 'A',
+		$$tlb: true,
 		compile: function (element, attr, transclude) {
 			return function ($scope, $element, $attr) {
 				var childElement, childScope;
 
-				$scope.$watch(function() { return $rbac.allow($attr.allow); }, function (newVal, oldVal) {
-					if (newVal === oldVal)
+				$scope.$watch(function() { return $rbac.allow($attr.allow); }, function (newVal) {
+					if (!angular.isDefined(newVal))
 						return;
 
 					if (childElement) {
